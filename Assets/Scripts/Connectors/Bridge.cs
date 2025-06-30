@@ -28,7 +28,7 @@ public class Bridge : Singleton<Bridge>
             Debug.LogWarning("[IFrameBridge] Running in Editor, generating random parameters.");
             MatchId = "Room01";
             PlayerId = $"player_{UnityEngine.Random.Range(1000, 9999)}";
-            OpponentId = "a9";// $"player_{UnityEngine.Random.Range(1000, 9999)}";
+            OpponentId = $"player_{UnityEngine.Random.Range(1000, 9999)}";// $"player_{UnityEngine.Random.Range(1000, 9999)}";
             // Ensure unique OpponentId
             while (OpponentId == PlayerId)
             {
