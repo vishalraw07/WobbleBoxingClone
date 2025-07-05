@@ -26,6 +26,8 @@ public class GameplayManager : Singleton<GameplayManager>
     public Sprite youWinSprite;  // Sprite for "You Win"
     public Sprite youLoseSprite; // Sprite for "You Lose"
 
+    public GameObject KO;
+
     private bool isGameEnded = false;
     [Networked] private NetworkBool IsGameEnded { get; set; } = false;
 
@@ -129,6 +131,7 @@ public class GameplayManager : Singleton<GameplayManager>
     void Start()
     {
         Time.timeScale = 1f;
+        KO.SetActive(false);
         ArenaManager arenaManager = FindObjectOfType<ArenaManager>();
         if (arenaManager != null) arenaManager.enabled = false;
 
@@ -425,9 +428,11 @@ public class GameplayManager : Singleton<GameplayManager>
         if (scoreText != null)
         {
             scoreText.text = "K.O.";
+            KO.SetActive(true);
             Time.timeScale = 0.1f;
             Time.fixedDeltaTime = Time.timeScale * 0.02f;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.3f);
+            KO.SetActive(false);
             Time.timeScale = 1f;
             Debug.Log("[GameplayManager] Displaying K.O.");
         }
@@ -601,7 +606,7 @@ public class GameplayManager : Singleton<GameplayManager>
 
         Bridge.Instance.PostMatchResult(outcomeForPost, score);
 
-        // Multiplayer: don’t restart, quit after 5 seconds
+        // Multiplayer: donï¿½t restart, quit after 5 seconds
         Debug.Log("[GameplayManager] Game ended in multiplayer, showing win screen.");
         StartCoroutine(EndMultiplayerGameCoroutine());
     }

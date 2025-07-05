@@ -1,4 +1,4 @@
-using UnityEngine; 
+using UnityEngine;
 using Fusion;
 
 public class GloveCollisionHandler : MonoBehaviour
@@ -17,7 +17,6 @@ public class GloveCollisionHandler : MonoBehaviour
         }
     }
 
-    
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (Time.time - lastHitTime < hitCooldown || !boxerController.IsInputEnabled)
@@ -27,9 +26,6 @@ public class GloveCollisionHandler : MonoBehaviour
         }
 
         Debug.Log($"[GloveCollisionHandler] {boxerController.PlayerTag} OnTriggerEnter2D: This GameObject={gameObject.name}, Tag={gameObject.tag}, Layer={LayerMask.LayerToName(gameObject.layer)}, Collided with={collision.gameObject.name}, Collided Tag={collision.gameObject.tag}, Collided Layer={LayerMask.LayerToName(collision.gameObject.layer)}");
-
-        // Check if the collider belongs to the glove (trigger) and the collision is with a body
-
 
         GameObject target = collision.gameObject;
         BoxerController targetController = target.GetComponentInParent<BoxerController>();
@@ -53,7 +49,9 @@ public class GloveCollisionHandler : MonoBehaviour
                 {
                     boxerController.RPC_OnHit(collision.transform.position + Vector3.up * 0.5f);
                 }
+                // Enable the hit indicator on the opponent's prefab
+                targetController.RPC_EnableHitIndicator();
             }
         }
-    } 
+    }
 }

@@ -57,18 +57,21 @@ public class BoxerController : NetworkBehaviour
     [SerializeField] private Transform foot; // Reference to foot Transform for center of mass
     [SerializeField] private Vector2 centerMass;
 
+    // Reference to the hit indicator object
+    public GameObject hitIndicator;
+    public GameObject DustHead;
+
     private Vector2 PunchDirection => PlayerTag == "Player1" ? Vector2.right : Vector2.left;
 
     public float lastHitTime;
     public const float HIT_COOLDOWN = 0.5f;
-    public NetworkObject hitEffectPrefab;
+   
     private bool punchInputThisFrame;
     private bool isFacingRight = true;
     private bool hasStoppedRotation;
     private bool isSlowingRotation;
     // Local input buffer, similar to PlayerController
     private bool punchInputTriggered;
-    
 
     public override void Spawned()
     {
@@ -119,6 +122,12 @@ public class BoxerController : NetworkBehaviour
         // Apply initial animation state
         UpdateAnimation();
         gameObject.SetActive(true);
+        // Ensure hitIndicator is disabled initially (optional if set in prefab)
+        if (hitIndicator != null)
+        {
+            hitIndicator.SetActive(false);
+        }
+        DustHead.SetActive(false);
         Debug.Log($"[BoxerController] {PlayerTag} initialized at {transform.position}, scale: {transform.localScale}, inputKey: {inputKey}, facing {(isFacingRight ? "right" : "left")}, HasStateAuthority: {HasStateAuthority}, HasInputAuthority: {HasInputAuthority}");
     }
 
@@ -165,7 +174,6 @@ public class BoxerController : NetworkBehaviour
     {
         if (!IsInputEnabled) return;
 
-
         if (HasInputAuthority)
         {
             // Process networked input from Connector
@@ -175,15 +183,14 @@ public class BoxerController : NetworkBehaviour
                 float randomFactor = Random.Range(0.8f, 1.2f);
 
                 RPC_PunchAndJump(IsGrounded, randomFactor, PunchDirection);
+                
                 punchInputTriggered = false; // Clear local buffer
             }
         }
         if (HasStateAuthority)
         {
-         
             if (IsGrounded && !IsPunching)
                 bodyRigidbody.linearVelocity = new Vector2(0, bodyRigidbody.linearVelocity.y);
-
 
             NetworkedRotation = transform.rotation;
             NetworkedPosition = transform.position;
@@ -194,7 +201,6 @@ public class BoxerController : NetworkBehaviour
             transform.position = NetworkedPosition;
             transform.rotation = NetworkedRotation;
             transform.localScale = NetworkedLocalScale;
-
         }
     }
 
@@ -204,6 +210,7 @@ public class BoxerController : NetworkBehaviour
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector3.down, groundCheckDistance, groundLayerMask);
         Debug.Log($"Ground Check: {hit.collider}");
         IsGrounded = hit.collider != null;
+        
     }
 
     private IEnumerator IStopRoation()
@@ -247,6 +254,8 @@ public class BoxerController : NetworkBehaviour
     {
         Debug.Log($"IsGrounded: {isGrounded}, randomFActor: {randomFactor}, punchDirection: {punchDirection}");
         continuance = StartCoroutine(PunchAndJumpLogic(isGrounded, randomFactor, punchDirection));
+        
+
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -255,6 +264,7 @@ public class BoxerController : NetworkBehaviour
         if (audioSource != null && jumpSFX != null)
         {
             audioSource.PlayOneShot(jumpSFX);
+            Dust.Play();
             Debug.Log($"[BoxerController] {PlayerTag} played jump SFX");
         }
     }
@@ -273,14 +283,8 @@ public class BoxerController : NetworkBehaviour
             StopCoroutine(nameof(IStopRoation));
             bodyRigidbody.angularDamping = 0.05f;
             hasStoppedRotation = false;
-            // Lunge toward opponent with slight upward component
-            //Vector2 moveDirection = opponentDirection + Vector2.up * 0.2f;
-            //bodyRigidbody.AddForce(moveDirection.normalized * (randomFactor * moveForce), ForceMode2D.Impulse);
-            // Small jump force
-            //bodyRigidbody.AddForce(transform.up * (randomFactor * jumpForce), ForceMode2D.Impulse);
             if (isGrounded)
             {
-
                 Vector3 horizontalDir = -punchDirection * (bodyRigidbody.rotation > 0f ? 1f : -1f);
                 if (transform.localScale.x > 0f)
                 {
@@ -289,10 +293,6 @@ public class BoxerController : NetworkBehaviour
                 bodyRigidbody.linearVelocity = (Vector3.up * randomFactor * jumpForce) + (horizontalDir * horizontalJumpForce);
                 bodyRigidbody.angularVelocity = (Random.Range(0, 2) == 0 ? 1f : -1f) * 100f;
             }
-            // Punch with arm
-            //armRigidbody.AddForce(punchDirection * (randomFactor * punchForce), ForceMode2D.Impulse);
-            // Random angular impulse for chaotic arm movement
-            //armRigidbody.AddTorque(Random.Range(-150f, 150f), ForceMode2D.Impulse);
         }
 
         Vector3 originalScale = armSpriteRenderer.transform.localScale;
@@ -310,61 +310,42 @@ public class BoxerController : NetworkBehaviour
         }
 
         IsPunching = false;
+        
         Debug.Log($"[BoxerController] {PlayerTag} completed punch");
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
     public void RPC_OnHit(Vector3 hitPosition)
     {
-        Dust.Play();
+        
         if (audioSource != null && punchHitSFX != null)
         {
             audioSource.PlayOneShot(punchHitSFX);
             Debug.Log($"[BoxerController] {PlayerTag} played punch hit SFX");
         }
-        Instantiate(hitEffectPrefab, hitPosition, Quaternion.identity);
+        
     }
-    /*
-    private void OnTriggerEnter2D(Collider2D collider)
+
+   [Rpc(RpcSources.All, RpcTargets.All)]
+    public void RPC_EnableHitIndicator()
     {
-        if (!Object.HasInputAuthority)
+        if (hitIndicator != null)
         {
-            return;
+            StartCoroutine(ShowHitIndicator());
+            Debug.Log($"[BoxerController] {PlayerTag} enabled hit indicator");
         }
-        if (GameplayManager.Instance.IsTransitioning || !collider.CompareTag("Glove"))
-        {
-            return;
-        }
-        if (Time.time - lastHitTime < BoxerController.HIT_COOLDOWN || !IsInputEnabled) return;
-
-        GameObject target = collider.gameObject;
-        BoxerController opponentBoxer = target.GetComponentInParent<BoxerController>();
-        if (opponentBoxer == null)
-        {
-           Debug.LogWarning($"[BoxerController] {PlayerTag} collided with {collider.gameObject.name}, but no BoxerController found in parent hierarchy");
-            return;
-        }
-        string targetTag = opponentBoxer.PlayerTag;
-
-        Debug.Log($"[BoxerController] {PlayerTag} collided with {collider.gameObject.name} (effective tag: {targetTag})");
-        if ((targetTag == "Player1" || targetTag == "Player2") && opponentBoxer != this)
-        {
-           Debug.Log($"[BoxerController] {PlayerTag} hit {targetTag}");
-            GameplayManager gameManager = GameplayManager.Instance;
-            if (gameManager != null)
-            {
-               lastHitTime = Time.time;
-               gameManager.RPC_RegisterHit(PlayerTag != "Player1");
-               if (HasStateAuthority)
-                {
-                    RPC_OnHit(collider.transform.position + Vector3.up * 0.5f);
-                }
-           }
-       }
-
     }
-    */
-    
+
+    private IEnumerator ShowHitIndicator()
+    {
+        hitIndicator.SetActive(true);
+        DustHead.SetActive(true);
+        yield return new WaitForSeconds(1f); // Wait for 2 seconds
+        DustHead.SetActive(false);
+        hitIndicator.SetActive(false);
+        Debug.Log($"[BoxerController] {PlayerTag} disabled hit indicator after 2 seconds");
+    }
+
     // Method to update animation state on all clients
     private void UpdateAnimation()
     {
@@ -390,6 +371,7 @@ public class BoxerController : NetworkBehaviour
         if (gloveSpriteRenderer != null && gloveSprites.Length > 0)
             gloveSpriteRenderer.sprite = gloveSprites[GloveSpriteIndex];
     }
+
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
@@ -398,10 +380,10 @@ public class BoxerController : NetworkBehaviour
             if (transform.eulerAngles.z >= 0 && transform.eulerAngles.z <= 10 || transform.eulerAngles.z <= 350 && transform.eulerAngles.z >= 359)
             {
                 Debug.Log($"Player Rotation : {transform.eulerAngles}");
-               
             }
         }
     }
+
     void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
@@ -409,6 +391,7 @@ public class BoxerController : NetworkBehaviour
             Debug.Log($"[BoxerController] {PlayerTag} not grounded");
         }
     }
+
     public void RandomizeAppearance()
     {
         if (HasStateAuthority)
@@ -417,7 +400,6 @@ public class BoxerController : NetworkBehaviour
             ArmSpriteIndex = UnityEngine.Random.Range(0, armSprites.Length);
             GloveSpriteIndex = UnityEngine.Random.Range(0, gloveSprites.Length);
             RPC_SyncAppearance(BodySpriteIndex, ArmSpriteIndex, GloveSpriteIndex);
-
         }
         Debug.Log($"[BoxerController] {PlayerTag} randomized appearance, indices: Body={BodySpriteIndex}, Arm={ArmSpriteIndex}, Glove={GloveSpriteIndex}");
     }
@@ -431,7 +413,6 @@ public class BoxerController : NetworkBehaviour
         ApplyAppearance();
         Debug.Log($"[BoxerController] {PlayerTag} synced appearance, indices: Body={bodyIndex}, Arm={armIndex}, Glove={gloveIndex}");
     }
-
 
     public void SetInputEnabled(bool enabled)
     {
@@ -448,7 +429,6 @@ public class BoxerController : NetworkBehaviour
         transform.localScale = scale;
         isFacingRight = scale.x > 0;
         inputKey = PlayerTag == "Player1" ? "space" : "return";
-        // ResetRigidbodies(); // Ensure physics is reset
         Debug.Log($"[BoxerController] {PlayerTag} synced at {position}, scale: {scale}");
     }
     
@@ -460,7 +440,6 @@ public class BoxerController : NetworkBehaviour
         transform.localScale = scale;
         isFacingRight = scale.x > 0;
         inputKey = PlayerTag == "Player1" ? "space" : "return";
-        // ResetRigidbodies(); // Ensure physics is reset
         Debug.Log($"[BoxerController] {PlayerTag} synced at {position}, scale: {scale}");
     }
 
@@ -489,4 +468,3 @@ public class BoxerController : NetworkBehaviour
         Gizmos.DrawLine(origin, origin + groundCheckDistance * Vector2.down);
     }
 }
- 
