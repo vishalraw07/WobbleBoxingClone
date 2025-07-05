@@ -356,7 +356,7 @@ public class GameplayManager : Singleton<GameplayManager>
         player1Ctrl.inputKey = "space";
         player1Ctrl.isAIControlled = false;
         player1Obj.tag = "Player1";
-        // player1Obj.transform.localScale = new Vector3(-4, 4, 1); // Face right
+        player1Obj.transform.localScale = new Vector3(-4, 4, 1); // Face right
         GameObject player1Glove = player1Obj.transform.Find("Glove")?.gameObject;
         //if (player1Glove != null)
         //    player1Glove.tag = "Player1";
@@ -370,7 +370,7 @@ public class GameplayManager : Singleton<GameplayManager>
         player2Ctrl.inputKey = "return";
         player2Ctrl.isAIControlled = true;
         player2Obj.tag = "Player2";
-        // player2Obj.transform.localScale = new Vector3(4, 4, 1); // Face left
+        player2Obj.transform.localScale = new Vector3(4, 4, 1); // Face left
         GameObject player2Glove = player2Obj.transform.Find("Glove")?.gameObject;
         //if (player2Glove != null)
         //    player2Glove.tag = "Player2";
@@ -384,11 +384,11 @@ public class GameplayManager : Singleton<GameplayManager>
     {
         if (isGameEnded) return;
 
-        Debug.Log($"[GameplayManager] RegisterHit: {(isPlayer2 ? "Player 1" : "Player 2")} scored a K.O.");
+        Debug.Log($"[GameplayManager] RegisterHit: {(isPlayer2 ? "Player 2" : "Player 1")} scored a K.O.");
         if (isPlayer2)
-            player1Score++;
-        else
             player2Score++;
+        else
+            player1Score++;
         StartCoroutine(DisplayKOAndTransition(isPlayer2));
     }
 

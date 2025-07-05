@@ -2,7 +2,7 @@
 
 ## Stable
 
-### Build 1034 (May 08, 2025)
+### Build 1011 (Apr 30, 2025)
 
 **Breaking Changes**
 
@@ -14,7 +14,6 @@
 
 **Changes**
 
-- Photon Realtime SDK to 4.1.8.15
 - DestroyWhenStateAuthorityLeaves prefab flag is now independent from the AllowStateAuthorityOverride
 - Shared mode master client can now despawn network objects with PlayerRef.None as state authority
 - Clicking animator bake failure error messages now shows the relevant gameObject in the hierarchy
