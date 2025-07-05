@@ -451,6 +451,7 @@ public class BoxerController : NetworkBehaviour
         // ResetRigidbodies(); // Ensure physics is reset
         Debug.Log($"[BoxerController] {PlayerTag} synced at {position}, scale: {scale}");
     }
+    
     public void SetPositionAndScale(Vector3 position, Vector3 scale)
     {
         NetworkedPosition = position;
