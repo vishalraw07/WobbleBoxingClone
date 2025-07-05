@@ -211,7 +211,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0023436528, y: 0}
+  m_Offset: {x: -0.006586559, y: -0.0015308969}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -221,8 +221,8 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.11575714, y: 0.12648088}
-  m_EdgeRadius: 0
+  m_Size: {x: 0.1336176, y: 0.14819482}
+  m_EdgeRadius: 0.02
 --- !u!50 &4267615644224550545
 Rigidbody2D:
   serializedVersion: 5
@@ -248,7 +248,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!114 &5627358573239164912
 MonoBehaviour:
@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 2891607802469319396}
   - component: {fileID: 6844765523200336004}
   - component: {fileID: 227191873531567547}
-  - component: {fileID: 205910576851773336}
+  - component: {fileID: 5537557678921011816}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -462,7 +462,7 @@ CapsuleCollider2D:
   m_Offset: {x: 0.0077579487, y: -0.08611072}
   m_Size: {x: 0.1325559, y: 0.51353896}
   m_Direction: 0
---- !u!114 &205910576851773336
+--- !u!114 &5537557678921011816
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -482,28 +482,36 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 2c004625f2997e841845bc38304baed5, type: 3}
   - {fileID: 21300000, guid: 2c00274b01375234c84be6d0dbea8e06, type: 3}
   bodySpritesLight:
-  - {fileID: 21300000, guid: 1c27ff66bd0ce5f419c9ff2215de0b7a, type: 3}
   - {fileID: 21300000, guid: 14b89cd393dd70145a478b47c8a50864, type: 3}
+  - {fileID: 21300000, guid: ddca228e3a8e70747a72233e18dbcc0c, type: 3}
   armSprites:
-  - {fileID: 21300000, guid: d9c2c5e6af0caf546928c3f2ff84afcc, type: 3}
   - {fileID: 21300000, guid: f2d9a5a61212bf8439b3480b202a024a, type: 3}
-  gloveSprites: []
+  - {fileID: 21300000, guid: 150feb539d53e0b4f994fe506e2df0d0, type: 3}
+  gloveSprites:
+  - {fileID: 21300000, guid: 1e8d164f4cad2cb48b3f5d23b5120f8f, type: 3}
+  - {fileID: 21300000, guid: 7f74c2b715b9eaa499fda918ca941f40, type: 3}
+  - {fileID: 21300000, guid: 5f37067e66edbc24a8ab1e70f5808f0f, type: 3}
+  - {fileID: 21300000, guid: 08135d6c8e4e0144faa99c5d9073325e, type: 3}
   punchHitSFX: {fileID: 8300000, guid: 7c1f55bb3eafd5b478573294fafb3fe4, type: 3}
   jumpSFX: {fileID: 8300000, guid: e91111af047f3c642a8fd6f346fa52cd, type: 3}
-  punchForce: 1
-  jumpForce: 10
-  horizontalJumpForce: 5
+  punchForce: 500
+  jumpForce: 350
+  horizontalJumpForce: 100
+  moveForce: 300
+  angularVelocity: 300
   inputKey: space
   playerTag: Player1
   isPlayer1: 1
   isAIControlled: 0
-  hitEffectPrefab: {fileID: 3677149704217690779, guid: 4b13696aeee820a43a494e47dbc30d07, type: 3}
-  groundCheckOffset: 0.1
-  groundCheckDistance: 0.2
+  swingSpeed: 2
+  swingAngle: 15
+  hitEffectPrefab: {fileID: 0}
+  groundCheckOffset: -0.5
+  groundCheckDistance: 1.1
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 256
-  centerOfMass: {x: 0, y: 0}
+  centerMass: {x: 0, y: -1.4}
 --- !u!1 &3296033917941090435
 GameObject:
   m_ObjectHideFlags: 0
@@ -857,7 +865,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.01861431, y: 0.0007642172}
+  m_Offset: {x: 0.022368826, y: -0.0158846}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -867,8 +875,8 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.12762207, y: 0.12438885}
-  m_EdgeRadius: 0
+  m_Size: {x: 0.1505559, y: 0.15406962}
+  m_EdgeRadius: 0.03
 --- !u!1001 &6255624763952896240
 PrefabInstance:
   m_ObjectHideFlags: 0
