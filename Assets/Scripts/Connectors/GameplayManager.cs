@@ -29,7 +29,8 @@ public class GameplayManager : Singleton<GameplayManager>
     public GameObject KO;
 
     private bool isGameEnded = false;
-    [Networked] private NetworkBool IsGameEnded { get; set; } = false;
+    [Networked] public NetworkBool IsGameEnded { get; set; } = false;
+    [Networked] public NetworkBool IsGameStarted { get; set; } = false;
 
     public GameObject scoreboardPanel;
     private bool isOnePlayerMode = false;
@@ -45,6 +46,9 @@ public class GameplayManager : Singleton<GameplayManager>
     // New field for K.O. display duration
     private float koDisplayTime = 1f; // Time to show "K.O." message
     [Networked] public NetworkBool IsTransitioning { get; set; } = false;
+
+    // New field from provided script
+    public string LocalPlayerId { get; private set; }
 
     public override void Awake()
     {
@@ -123,7 +127,19 @@ public class GameplayManager : Singleton<GameplayManager>
         Vector3 scale = playerTag == "Player1" ? new Vector3(-4, 4, 1) : new Vector3(4, 4, 1);
         player.RPC_SetPositionAndScale(spawnPosition, scale);
         player.RandomizeAppearance();
-        Debug.Log($"[GameplayManager] Spawned {playerTag} at {spawnPosition}, scale: {scale}");
+
+        // Update cached references and set LocalPlayerId
+        if (playerTag == "Player1")
+        {
+            player1Multi = player;
+        }
+        else
+        {
+            player2Multi = player;
+        }
+        LocalPlayerId = playerTag;
+
+        Debug.Log($"[GameplayManager] Spawned {playerTag},LocalPlayerId={LocalPlayerId} at {spawnPosition}, scale: {scale}");
 
         // Start waiting for both players
         StartCoroutine(WaitForPlayers());
@@ -313,6 +329,7 @@ public class GameplayManager : Singleton<GameplayManager>
 
         player1Multi.SetInputEnabled(true);
         player2Multi.SetInputEnabled(true);
+        IsGameStarted = true;
 
         Debug.Log("[GameplayManager] Multiplayer game started successfully");
     }
@@ -545,7 +562,7 @@ public class GameplayManager : Singleton<GameplayManager>
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_EndGame(string winner)
+    public void RPC_EndGame(string winner)
     {
         Debug.Log($"[GameplayManager] {winner} Wins!");
         if (isOnePlayerMode)
@@ -555,60 +572,129 @@ public class GameplayManager : Singleton<GameplayManager>
         }
         else
         {
-            if (player1Multi != null) player1Multi.SetInputEnabled(false);
-            if (player2Multi != null) player2Multi.SetInputEnabled(false);
+            if (player1Multi != null && player1Multi.Object != null)
+                player1Multi.SetInputEnabled(false);
+            if (player2Multi != null && player2Multi.Object != null)
+                player2Multi.SetInputEnabled(false);
         }
 
         if (winLoadImage != null)
         {
+            //scoreboardPanel.SetActive(false);
+            //scoreText.gameObject.SetActive(false);
+            //winLoadImage.gameObject.SetActive(true);
+            //// Multiplayer: Determine outcome for local player
+            //BoxerController localPlayer = FindObjectsOfType<BoxerController>().FirstOrDefault(p => p.Object.HasInputAuthority);
+            //string localPlayerTag = localPlayer != null ? localPlayer.PlayerTag : null;
+
+            //string outcome = (localPlayerTag != null && ((winner == "Player 1" && localPlayerTag == "Player1") ||
+            //                 (winner == "Player 2" && localPlayerTag == "Player2"))) ? "won" : "lost";
+            //winLoadImage.sprite = (outcome == "won") ? youWinSprite : youLoseSprite;
             scoreboardPanel.SetActive(false);
             scoreText.gameObject.SetActive(false);
             winLoadImage.gameObject.SetActive(true);
-            // Multiplayer: Determine outcome for local player
-            BoxerController localPlayer = FindObjectsOfType<BoxerController>().FirstOrDefault(p => p.Object.HasInputAuthority);
-            string localPlayerTag = localPlayer != null ? localPlayer.PlayerTag : null;
 
-            string outcome = (localPlayerTag != null && ((winner == "Player 1" && localPlayerTag == "Player1") ||
-                             (winner == "Player 2" && localPlayerTag == "Player2"))) ? "won" : "lost";
+            // Use LocalPlayerId to determine outcome
+            string outcome = (LocalPlayerId != null && ((winner  == "Player1") ||
+                                (winner == "Player2"))) ? "won" : "lost";
             winLoadImage.sprite = (outcome == "won") ? youWinSprite : youLoseSprite;
+
         }
 
-        // Calculate outcome for PostMatchResult
-        BoxerController localPlayerForPost = FindObjectsOfType<BoxerController>().FirstOrDefault(p => p.Object.HasInputAuthority);
-        string localPlayerTagForPost = localPlayerForPost != null ? localPlayerForPost.PlayerTag : null;
-        string outcomeForPost = (localPlayerTagForPost != null &&
-                                 ((winner == "Player 1" && localPlayerTagForPost == "Player1") ||
-                                  (winner == "Player 2" && localPlayerTagForPost == "Player2"))) ? "won" : "lost";
-
-        int score;
-        if (isOnePlayerMode)
+        // Calculate outcome for PostMatchResult using LocalPlayerId
+        string outcomeForPost;
+        if (LocalPlayerId != null)
         {
-            // For single-player (not the focus here, but included for completeness)
-            score = player1Score; // Post the human player's score
+            outcomeForPost = (winner ==  "Player1") ||
+                             (winner ==  "Player2") ? "won" : "lost";
         }
         else
         {
-            // Multiplayer: Set score based on the local player's tag
-            if (localPlayerTagForPost == "Player1")
+            Debug.LogError($"[GameplayManager] LocalPlayerId is null! Attempting fallback with NetworkRunner.");
+
+            NetworkRunner runner = Connector.Instance.NetworkRunner;
+            BoxerController localPlayer = null;
+            if (runner != null)
             {
-                score = player1Score;
+                NetworkObject playerObject = runner.GetPlayerObject(runner.LocalPlayer);
+                if (playerObject != null)
+                {
+                    localPlayer = playerObject.GetComponent<BoxerController>();
+                }
             }
-            else if (localPlayerTagForPost == "Player2")
+
+            if (localPlayer == null)
             {
-                score = player2Score;
+                var boxers = FindObjectsOfType<BoxerController>();
+                Debug.Log($"[{System.DateTime.Now:yyyy-MM-dd HH:mm:ss}] [GameplayManager] Found {boxers.Length} BoxerController instances");
+                foreach (var p in boxers)
+                {
+                    Debug.Log($"[{System.DateTime.Now:yyyy-MM-dd HH:mm:ss}] [GameplayManager] BoxerController: Name={p.gameObject.name}, PlayerTag={p.PlayerTag}, HasInputAuthority={(p.Object != null ? p.Object.HasInputAuthority.ToString() : "null")}, NetworkObject={(p.Object != null ? p.Object.Id.ToString() : "null")}");
+                    if (p.Object == null)
+                    {
+                        Debug.LogWarning($"[{System.DateTime.Now:yyyy-MM-dd HH:mm:ss}] [GameplayManager] Found BoxerController with null NetworkObject: {p.gameObject.name}");
+                    }
+                }
+                localPlayer = boxers.FirstOrDefault(p => p.Object != null && p.Object.HasInputAuthority);
+            }
+
+            if (localPlayer != null)
+            {
+                LocalPlayerId = localPlayer.PlayerTag;
+                outcomeForPost = (winner == "Player 1" && LocalPlayerId == "Player1") ||
+                                 (winner == "Player 2" && LocalPlayerId == "Player2") ? "won" : "lost";
+                Debug.Log($"[GameplayManager] Fallback succeeded: LocalPlayerId={LocalPlayerId}, outcomeForPost={outcomeForPost}");
             }
             else
             {
-                Debug.LogError("[GameplayManager] Could not determine local player tag for score!");
-                score = 0; // Fallback in case of an error
+                Debug.LogError($"[GameplayManager] Could not find local player's BoxerController!");
+                // Final fallback: Assume remaining player is the winner
+                if (runner != null && runner.ActivePlayers.Count() == 1 && runner.ActivePlayers.Contains(runner.LocalPlayer))
+                {
+                    LocalPlayerId = winner == "Player 1" ? "Player1" : "Player2";
+                    outcomeForPost = "won";
+                    Debug.Log($"[GameplayManager] Final fallback: LocalPlayerId={LocalPlayerId}, outcomeForPost={outcomeForPost}");
+                }
+                else
+                {
+                    outcomeForPost = "lost";
+                    Debug.LogError($"[GameplayManager] All fallbacks failed: Runner={(runner != null ? "valid" : "null")}, ActivePlayers={runner?.ActivePlayers.Count() ?? 0}");
+                }
             }
         }
+        // Use existing scores
+        int score1 = player1Score;
+        int score2 = player2Score;
 
-        Bridge.Instance.PostMatchResult(outcomeForPost, score);
+        //int score1=0,score2=0;
+        //if (isOnePlayerMode)
+        //{
+        //    // For single-player (not the focus here, but included for completeness)
+        //    score1 = player1Score; // Post the human player's score
+        //    score2 = player2Score; // Post the human player's score
+        //}
+        //else
+        //{
+        //    // Multiplayer: Set score based on the local player's tag
+        //    if (localPlayerTagForPost == "Player1")
+        //    {
+        //        score1 = player1Score;
+        //    }
+        //    else if (localPlayerTagForPost == "Player2")
+        //    {
+        //        score2 = player2Score;
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError("[GameplayManager] Could not determine local player tag for score!");
+        //        score1 = 0; // Fallback in case of an error
+        //        score2 = 0; // Fallback in case of an error
+        //    }
+        //}        
 
         // Multiplayer: don�t restart, quit after 5 seconds
-        Debug.Log("[GameplayManager] Game ended in multiplayer, showing win screen.");
-        StartCoroutine(EndMultiplayerGameCoroutine());
+        Debug.Log($"[GameplayManager] {outcomeForPost} Game ended in multiplayer, showing win screen.");
+        StartCoroutine(EndMultiplayerGameCoroutine(outcomeForPost, score1, score2));
     }
 
     void UpdateScoreUI()
@@ -624,7 +710,7 @@ public class GameplayManager : Singleton<GameplayManager>
         }
     }
 
-    void EndGame(string winner)
+    public void EndGame(string winner)
     {
         Debug.Log($"[GameplayManager] {winner} Wins!");
         if (isOnePlayerMode)
@@ -634,8 +720,10 @@ public class GameplayManager : Singleton<GameplayManager>
         }
         else
         {
-            if (player1Multi != null) player1Multi.SetInputEnabled(false);
-            if (player2Multi != null) player2Multi.SetInputEnabled(false);
+            if (player1Multi != null && player1Multi.Object != null  )
+                player1Multi.SetInputEnabled(false);
+            if (player2Multi != null && player2Multi.Object != null )
+                player2Multi.SetInputEnabled(false);
         }
 
         if (winLoadImage != null)
@@ -649,15 +737,16 @@ public class GameplayManager : Singleton<GameplayManager>
         string outcome = isOnePlayerMode ? (winner == "Player 1" ? "won" : "lost") :
             (winner == "Player 1" && Bridge.PlayerId == player1Multi?.PlayerTag) ||
             (winner == "Player 2" && Bridge.PlayerId == player2Multi?.PlayerTag) ? "won" : "lost";
-        int score = winner == "Player 1" ? player1Score : player2Score;
+        int score1 = winner == "Player 1" ? player1Score : player2Score;
+        int score2 = winner == "Player 1" ? player2Score : player1Score;
         // Bridge.Instance.PostMatchResult(outcome, score);
-        StartCoroutine(PostMatchResultWithDelay(outcome, score));
+        StartCoroutine(PostMatchResultWithDelay(outcome, score1, score2));
     }
 
-    private IEnumerator PostMatchResultWithDelay(string outcome, int score)
+    private IEnumerator PostMatchResultWithDelay(string outcome, int score1, int score2)
     {
-        yield return new WaitForSeconds(5f);
-        Bridge.Instance.PostMatchResult(outcome, score);
+        yield return new WaitForSeconds(3f);
+        Bridge.Instance.PostMatchResult(outcome, score1, score2);
     }
 
     IEnumerator TransitionToLoadSequence(float waitTime)
@@ -730,22 +819,52 @@ public class GameplayManager : Singleton<GameplayManager>
 #endif
     }
 
-    private IEnumerator EndMultiplayerGameCoroutine()
+    private IEnumerator EndMultiplayerGameCoroutine(string outcomeForPost, int score1, int score2)
     {
         // Wait for 5 seconds to display the win sprite
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(3f);
 
-        // Find the local player's BoxerController
-        BoxerController localPlayer = FindObjectsOfType<BoxerController>().FirstOrDefault(p => p.Object.HasInputAuthority);
-        if (localPlayer != null)
+        Bridge.Instance.PostMatchResult(outcomeForPost, score1, score2);
+
+        //// Find the local player's BoxerController
+        //BoxerController localPlayer = FindObjectsOfType<BoxerController>().FirstOrDefault(p => p.Object.HasInputAuthority);
+        //if (localPlayer != null)
+        //{
+        //    // Explicitly despawn the local player's network object
+        //    Connector.Instance.NetworkRunner.Despawn(localPlayer.Object);
+        //    Debug.Log("[GameplayManager] player despawned.");
+        //}
+
+        //// Shutdown the network runner and load the main menu scene after completion
+        //Connector.Instance.NetworkRunner.Shutdown();
+
+
+        NetworkRunner runner = Connector.Instance.NetworkRunner;
+        if (runner != null)
         {
-            // Explicitly despawn the local player's network object
-            Connector.Instance.NetworkRunner.Despawn(localPlayer.Object);
-            Debug.Log("[GameplayManager] player despawned.");
-        }
+            BoxerController localPlayer = null;
+            NetworkObject playerObject = runner.GetPlayerObject(runner.LocalPlayer);
+            if (playerObject != null)
+            {
+                localPlayer = playerObject.GetComponent<BoxerController>();
+            }
 
-        // Shutdown the network runner and load the main menu scene after completion
-        Connector.Instance.NetworkRunner.Shutdown();
+            if (localPlayer != null)
+            {
+                runner.Despawn(localPlayer.Object);
+                Debug.Log($"[GameplayManager] Player despawned: PlayerTag={localPlayer.PlayerTag}");
+            }
+            else
+            {
+                Debug.LogWarning($"[GameplayManager] Could not find local player for despawn!");
+            }
+
+            runner.Shutdown();
+        }
+        else
+        {
+            Debug.LogError($"[GameplayManager] NetworkRunner is null during shutdown!");
+        }
     }
 
 }

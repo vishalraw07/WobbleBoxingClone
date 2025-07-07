@@ -12,12 +12,12 @@ public class Bridge : Singleton<Bridge>
     public static string PlayerId { get; private set; }
     public static string OpponentId { get; private set; }
 #if UNITY_WEBGL && !UNITY_EDITOR
-    [DllImport("__Internal")] private static extern void SendMatchResult(string outcome, int score);
+    [DllImport("__Internal")] private static extern void SendMatchResult(string MatchId ,string PlayerId ,string OpponentId, string outcome, int score1, int score2);
     [DllImport("__Internal")] private static extern void SendMatchAbort(string message, string error, string errorCode);
-    [DllImport("__Internal")] private static extern void SendScreenshot(string base64);
+    [DllImport("__Internal")] private static extern int GetDeviceType();   
 #endif
 
-   
+
 
     void Start()
     {
@@ -25,7 +25,7 @@ public class Bridge : Singleton<Bridge>
         string url = Application.absoluteURL;
         if (string.IsNullOrEmpty(url))
         {
-            Debug.LogWarning("[IFrameBridge] Running in Editor, generating random parameters.");
+            Debug.LogWarning("[Bridge] Running in Editor, generating random parameters.");
             MatchId = "Room01";
             PlayerId = $"player_{UnityEngine.Random.Range(1000, 9999)}";
             OpponentId = $"player_{UnityEngine.Random.Range(1000, 9999)}";// $"player_{UnityEngine.Random.Range(1000, 9999)}";
@@ -58,43 +58,35 @@ public class Bridge : Singleton<Bridge>
             }
         }
 
-
         Debug.Log($"[Bridge] MatchId: {MatchId}, PlayerId: {PlayerId}, OpponentId: {OpponentId}");
 
         if (string.IsNullOrEmpty(MatchId) || string.IsNullOrEmpty(PlayerId))
         {
             PostMatchAbort("Invalid match parameters", "Missing URL parameters", "1004");
             return;
-        }
-
-         
+        }         
 
         // Check for bot or multiplayer
         if (PlayerUtils.IsBot(OpponentId))
         {
-            Debug.Log("[Bridge] Bot detected, starting single-player mode.");
-            //gameManager.ShowMainMenu();
-            SceneManager.LoadScene("Game");
-            //gm.StartGame(true);
-
+            Debug.Log("[Bridge] Bot detected, starting single-player mode.");            
+            SceneManager.LoadScene("Game");        
         }
         else
         {
             Debug.Log("[Bridge] Starting multiplayer session.");
             Connector.Instance.ConnectToServer(MatchId);
-        }
-
-        StartCoroutine(CaptureAndSendScreenshotRoutine());
+        }                
     }
 
-    public void PostMatchResult(string outcome, int score = 0)
+    public void PostMatchResult(string outcome, int score1 = 0, int score2 = 0)
     {
-        Debug.Log($"[Bridge] Sending match_result: outcome={outcome}, score={score}");
+        Debug.Log($"[Bridge] Sending match_result: outcome={outcome}, score={score1}, opponentscore= {score2}");
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-        SendMatchResult(outcome, score);
+        SendMatchResult(MatchId, PlayerId, OpponentId, outcome, score1, score2);
 #else
-        Debug.Log($"[Editor] match_result: {{ matchId: {MatchId}, playerId: {PlayerId}, opponentId: {OpponentId}, outcome: {outcome}, score: {score} }}");
+        Debug.Log($"[Editor] match_result: {{ matchId: {MatchId}, playerId: {PlayerId}, opponentId: {OpponentId}, outcome: {outcome}, score: {score1},opponentscore={score2} }}");
 #endif
     }
 
@@ -108,30 +100,7 @@ public class Bridge : Singleton<Bridge>
         Debug.Log($"[Editor] match_abort: {{ message: {message}, error: {error}, errorCode: {errorCode} }}");
 #endif
     }
-
-    private IEnumerator CaptureAndSendScreenshotRoutine()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(5f);
-            yield return StartCoroutine(CaptureAndSendScreenshot());
-        }
-    }
-
-    private IEnumerator CaptureAndSendScreenshot()
-    {
-        yield return new WaitForEndOfFrame();
-        Texture2D tex = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-        tex.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-        tex.Apply();
-        byte[] pngData = tex.EncodeToPNG();
-        string base64 = Convert.ToBase64String(pngData);
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-        SendScreenshot(base64);
-#endif
-        Destroy(tex);
-    }
+ 
 
     public static class PlayerUtils
     {
