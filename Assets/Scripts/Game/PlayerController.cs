@@ -34,6 +34,10 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private string currentAnimationState = "Idle";
 
+    public GameObject hitIndicator;
+    public GameObject DustHead;
+
+
     private bool isPunching = false;
     public bool isInputEnabled = true;
     private Vector3 baseScale = new Vector3(4f, 4f, 1f);
@@ -48,6 +52,7 @@ public class PlayerController : MonoBehaviour
     private bool punchInputTriggered;
     private float spawnTime;
     private const float initialGracePeriod = 1f;
+    public ParticleSystem Dust;
 
     // Ground check parameters from BoxerController
     [Header("Ground Check")]
@@ -145,6 +150,9 @@ public class PlayerController : MonoBehaviour
             nextAIActionTime = Time.time + Random.Range(minAIActionDelay, maxAIActionDelay);
 
         Debug.Log($"[PlayerController] {playerTag} initialized, isAIControlled: {isAIControlled}, inputKey: {inputKey}, tag: {gameObject.tag}");
+
+        DustHead.SetActive(false);
+        hitIndicator.SetActive(false);
     }
 
     void Update()
@@ -255,6 +263,7 @@ public class PlayerController : MonoBehaviour
         {
             currentAnimationState = "Punch";
             audioSource.PlayOneShot(jumpSFX);
+            Dust.Play();
             // Determine direction for lunge (horizontalDir logic from BoxerController)
             Vector3 horizontalDir = -punchDirection * (bodyRigidbody.rotation > 0f ? 1f : -1f);
             if (transform.localScale.x > 0f)
@@ -277,6 +286,24 @@ public class PlayerController : MonoBehaviour
         // Return to idle animation
         currentAnimationState = "Idle";
         isPunching = false;
+    }
+    public void EnableHitIndicator()
+    {
+        if (hitIndicator != null)
+        {
+            StartCoroutine(ShowHitIndicator());
+            Debug.Log($"[playerController] {playerTag} enabled hit indicator");
+        }
+    }
+
+    private IEnumerator ShowHitIndicator()
+    {
+        hitIndicator.SetActive(true);
+        DustHead.SetActive(true);
+        yield return new WaitForSeconds(1f); // Wait for 2 seconds
+        DustHead.SetActive(false);
+        hitIndicator.SetActive(false);
+        Debug.Log($"[playerController] {playerTag} disabled hit indicator after 2 seconds");
     }
     /*
     void OnTriggerEnter2D(Collider2D collision)

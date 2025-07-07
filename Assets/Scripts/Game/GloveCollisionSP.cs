@@ -42,7 +42,7 @@ public class GloveCollisionSP : MonoBehaviour
         string targetTag = targetController.playerTag;
 
         // Ensure the collision is with the opponent's body and not self
-        if ((targetTag == "Player1" || targetTag == "Player2") && targetController != boxerController )
+        if ((targetTag == "Player1" || targetTag == "Player2") && targetController != boxerController)
         {
             Debug.Log($"[GloveCollisionHandler] {boxerController.playerTag}'s glove hit {targetTag}'s body");
             GameplayManager gameManager = GameplayManager.Instance;
@@ -50,8 +50,9 @@ public class GloveCollisionSP : MonoBehaviour
             {
                 lastHitTime = Time.time;
                 gameManager.SinglePlayerRegisterHit(boxerController.playerTag != "Player1");
-                
+
             }
+            targetController.EnableHitIndicator();
         }
     }
 }

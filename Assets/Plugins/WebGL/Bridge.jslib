@@ -1,6 +1,9 @@
 mergeInto(LibraryManager.library, {
-  SendMatchResult: function(outcomePtr, score) {
-    var outcome = UTF8ToString(outcomePtr);
+  SendMatchResult: function((matchIdPtr, playerIdPtr, opponentIdPtr ,outcomePtr, score, Opponentscore) {
+     var outcome = UTF8ToString(outcomePtr);
+    var matchId = UTF8ToString(matchIdPtr);
+    var playerId = UTF8ToString(playerIdPtr);
+    var opponentId = UTF8ToString(opponentIdPtr);
     parent.postMessage({
       type: 'match_result',
       payload: {
@@ -8,7 +11,8 @@ mergeInto(LibraryManager.library, {
         playerId: window.playerId || '',
         opponentId: window.opponentId || '',
         outcome: outcome,
-        score: score
+        score: score,
+        Opponentscore: Opponentscore
       }
     }, '*');
   },

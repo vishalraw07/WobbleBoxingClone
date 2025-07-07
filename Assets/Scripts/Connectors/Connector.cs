@@ -126,8 +126,41 @@ public class Connector : Singleton<Connector>, INetworkRunnerCallbacks
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"Photon Callback - Player left: {player}");
-        Bridge.Instance.PostMatchAbort("Player left the game", "", "");
+        Debug.Log($"[{System.DateTime.Now:yyyy-MM-dd HH:mm:ss}] [Connector] Player left: {player}, LocalPlayer: {runner.LocalPlayer}, ActivePlayers: {runner.ActivePlayers.Count()}");
+
+        if (GameplayManager.Instance != null && GameplayManager.Instance.IsGameStarted)
+        {
+            var remainingPlayers = runner.ActivePlayers.ToList();
+            if (remainingPlayers.Count < 2)
+            {
+                PlayerRef remainingPlayer = remainingPlayers[0];
+                BoxerController[] boxers = UnityEngine.Object.FindObjectsByType<BoxerController>(FindObjectsSortMode.None);
+                BoxerController remainingBoxer = boxers.FirstOrDefault(b =>
+                    b.Object != null && b.Object.InputAuthority == remainingPlayer);
+
+                if (remainingBoxer != null)
+                {
+                    string winnerTag = remainingBoxer.PlayerTag;
+                    Debug.Log($"[{System.DateTime.Now:yyyy-MM-dd HH:mm:ss}] [Connector] Declaring {winnerTag} as the winner.");
+                    GameplayManager.Instance.RPC_EndGame(winnerTag);
+                }
+                else
+                {
+                    Debug.LogError($"[{System.DateTime.Now:yyyy-MM-dd HH:mm:ss}] [Connector] Could not find remaining player's BoxerController");
+                    Bridge.Instance.PostMatchAbort("Error determining winner", "BoxerController not found", "1020");
+                }
+            }
+            else
+            {
+                Debug.LogError($"[{System.DateTime.Now:yyyy-MM-dd HH:mm:ss}] [Connector] Unexpected number of remaining players: {remainingPlayers.Count}");
+                Bridge.Instance.PostMatchAbort("Unexpected player count", "", "");
+            }
+        }
+        else
+        {
+            Debug.Log($"[{System.DateTime.Now:yyyy-MM-dd HH:mm:ss}] [Connector] Player left before game start or GameplayManager not initialized");
+            Bridge.Instance.PostMatchAbort("Player left before game start", "", "");
+        }
     }
 
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
