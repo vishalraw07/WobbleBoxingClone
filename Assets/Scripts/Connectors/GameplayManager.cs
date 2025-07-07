@@ -580,23 +580,84 @@ public class GameplayManager : Singleton<GameplayManager>
 
         if (winLoadImage != null)
         {
-            //scoreboardPanel.SetActive(false);
-            //scoreText.gameObject.SetActive(false);
-            //winLoadImage.gameObject.SetActive(true);
-            //// Multiplayer: Determine outcome for local player
-            //BoxerController localPlayer = FindObjectsOfType<BoxerController>().FirstOrDefault(p => p.Object.HasInputAuthority);
-            //string localPlayerTag = localPlayer != null ? localPlayer.PlayerTag : null;
+            scoreboardPanel.SetActive(false);
+            scoreText.gameObject.SetActive(false);
+            winLoadImage.gameObject.SetActive(true);
 
-            //string outcome = (localPlayerTag != null && ((winner == "Player 1" && localPlayerTag == "Player1") ||
-            //                 (winner == "Player 2" && localPlayerTag == "Player2"))) ? "won" : "lost";
-            //winLoadImage.sprite = (outcome == "won") ? youWinSprite : youLoseSprite;
+            // Multiplayer: Determine outcome for local player
+            BoxerController localPlayer = FindObjectsOfType<BoxerController>().FirstOrDefault(p => p.Object.HasInputAuthority);
+            string localPlayerTag = localPlayer != null ? localPlayer.PlayerTag : null;
+
+            string outcome = (localPlayerTag != null && ((winner == "Player 1" && localPlayerTag == "Player1") ||
+                            (winner == "Player 2" && localPlayerTag == "Player2"))) ? "won" : "lost";
+            winLoadImage.sprite = (outcome == "won") ? youWinSprite : youLoseSprite;          
+        }
+
+        // Calculate outcome for PostMatchResult
+        BoxerController localPlayerForPost = FindObjectsOfType<BoxerController>().FirstOrDefault(p => p.Object.HasInputAuthority);
+        string localPlayerTagForPost = localPlayerForPost != null ? localPlayerForPost.PlayerTag : null;
+        string outcomeForPost = (localPlayerTagForPost != null &&
+                                 ((winner == "Player 1" && localPlayerTagForPost == "Player1") ||
+                                  (winner == "Player 2" && localPlayerTagForPost == "Player2"))) ? "won" : "lost";
+        // Use existing scores
+        int score1 = player1Score;
+        int score2 = player2Score;
+         
+        if (isOnePlayerMode)
+        {
+            // For single-player (not the focus here, but included for completeness)
+            score1 = player1Score; // Post the human player's score
+            score2 = player2Score; // Post the human player's score
+        }
+        else
+        {
+            // Multiplayer: Set score based on the local player's tag
+            if (localPlayerTagForPost == "Player1")
+            {
+                score1 = player1Score;
+            }
+            else if (localPlayerTagForPost == "Player2")
+            {
+                score2 = player2Score;
+           }
+           else
+            {
+                Debug.LogError("[GameplayManager] Could not determine local player tag for score!");
+                score1 = 0; // Fallback in case of an error
+                score2 = 0; // Fallback in case of an error
+            }
+        }        
+
+        // Multiplayer: don�t restart, quit after 5 seconds
+        Debug.Log($"[GameplayManager] {outcomeForPost} Game ended in multiplayer, showing win screen.");
+        StartCoroutine(EndMultiplayerGameCoroutine(outcomeForPost, score1, score2));
+    }
+
+    public void RPC_PlayerLeft(string winner)
+    {
+        Debug.Log($"[GameplayManager] {winner} Wins!");
+        if (isOnePlayerMode)
+        {
+            if (player1Single != null) player1Single.SetInputEnabled(false);
+            if (player2Single != null) player2Single.SetInputEnabled(false);
+        }
+        else
+        {
+            if (player1Multi != null && player1Multi.Object != null)
+                player1Multi.SetInputEnabled(false);
+            if (player2Multi != null && player2Multi.Object != null)
+                player2Multi.SetInputEnabled(false);
+        }
+
+        if (winLoadImage != null)
+        {
             scoreboardPanel.SetActive(false);
             scoreText.gameObject.SetActive(false);
             winLoadImage.gameObject.SetActive(true);
 
             // Use LocalPlayerId to determine outcome
-            string outcome = (LocalPlayerId != null && ((winner  == "Player1" || winner =="Player 1") ||
-                                (winner == "Player2" || winner == "Player 2"))) ? "won" : "lost";
+            string outcome = (LocalPlayerId != null && ((winner  == "Player1") ||
+                                (winner == "Player2" ))) ? "won" : "lost";
             winLoadImage.sprite = (outcome == "won") ? youWinSprite : youLoseSprite;
 
         }
@@ -606,7 +667,7 @@ public class GameplayManager : Singleton<GameplayManager>
         if (LocalPlayerId != null)
         {
             outcomeForPost = (winner ==  "Player1" || winner == "Player 1") ||
-                             (winner ==  "Player2" || winner == "Player 2") ? "won" : "lost";
+                         (winner ==  "Player2" || winner == "Player 2") ? "won" : "lost";
         }
         else
         {
@@ -664,33 +725,7 @@ public class GameplayManager : Singleton<GameplayManager>
         }
         // Use existing scores
         int score1 = player1Score;
-        int score2 = player2Score;
-
-        //int score1=0,score2=0;
-        //if (isOnePlayerMode)
-        //{
-        //    // For single-player (not the focus here, but included for completeness)
-        //    score1 = player1Score; // Post the human player's score
-        //    score2 = player2Score; // Post the human player's score
-        //}
-        //else
-        //{
-        //    // Multiplayer: Set score based on the local player's tag
-        //    if (localPlayerTagForPost == "Player1")
-        //    {
-        //        score1 = player1Score;
-        //    }
-        //    else if (localPlayerTagForPost == "Player2")
-        //    {
-        //        score2 = player2Score;
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("[GameplayManager] Could not determine local player tag for score!");
-        //        score1 = 0; // Fallback in case of an error
-        //        score2 = 0; // Fallback in case of an error
-        //    }
-        //}        
+        int score2 = player2Score;             
 
         // Multiplayer: don�t restart, quit after 5 seconds
         Debug.Log($"[GameplayManager] {outcomeForPost} Game ended in multiplayer, showing win screen.");

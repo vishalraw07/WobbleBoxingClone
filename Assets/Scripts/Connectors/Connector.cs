@@ -142,7 +142,7 @@ public class Connector : Singleton<Connector>, INetworkRunnerCallbacks
                 {
                     string winnerTag = remainingBoxer.PlayerTag;
                     Debug.Log($"[{System.DateTime.Now:yyyy-MM-dd HH:mm:ss}] [Connector] Declaring {winnerTag} as the winner.");
-                    GameplayManager.Instance.RPC_EndGame(winnerTag);
+                    GameplayManager.Instance.RPC_PlayerLeft(winnerTag);
                 }
                 else
                 {
