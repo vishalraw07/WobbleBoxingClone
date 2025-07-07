@@ -23,8 +23,8 @@ public class GameplayManager : Singleton<GameplayManager>
     public Sprite load2Sprite;
     public Sprite load3Sprite;
     public Sprite loadStartSprite;
-    public Sprite youWinSprite;  // Sprite for "You Win"
-    public Sprite youLoseSprite; // Sprite for "You Lose"
+    public TextMeshProUGUI winMessageText;
+    public TextMeshProUGUI winScoreText;
 
     public GameObject KO;
 
@@ -163,6 +163,7 @@ public class GameplayManager : Singleton<GameplayManager>
             // Single-player mode
             StartGame(true);
         }
+        if (winMessageText != null) winMessageText.gameObject.SetActive(false);
     }
 
     public void StartGameUI()
@@ -412,7 +413,7 @@ public class GameplayManager : Singleton<GameplayManager>
         StartCoroutine(DisplayKOAndTransition(isPlayer2));
     }
 
-    [Rpc(RpcSources.StateAuthority , RpcTargets.All)]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_RegisterHit(bool isPlayer2)
     {
         Debug.Log($"[GameplayManager] entering transistion state {IsGameEnded}, {IsTransitioning}");
@@ -519,7 +520,7 @@ public class GameplayManager : Singleton<GameplayManager>
         else
         {
             NetworkRunner runner = Connector.Instance.NetworkRunner;
-            if (runner != null  ) // Only state authority (server) updates positions
+            if (runner != null) // Only state authority (server) updates positions
             {
                 if (player1Multi != null)
                 {
@@ -578,11 +579,12 @@ public class GameplayManager : Singleton<GameplayManager>
                 player2Multi.SetInputEnabled(false);
         }
 
-        if (winLoadImage != null)
+        if (winLoadImage != null && winMessageText != null)
         {
-            scoreboardPanel.SetActive(false);
-            scoreText.gameObject.SetActive(false);
+            // scoreboardPanel.SetActive(false);
+            // scoreText.gameObject.SetActive(false);
             winLoadImage.gameObject.SetActive(true);
+            winMessageText.gameObject.SetActive(true);
 
             // Multiplayer: Determine outcome for local player
             BoxerController localPlayer = FindObjectsOfType<BoxerController>().FirstOrDefault(p => p.Object.HasInputAuthority);
@@ -590,8 +592,18 @@ public class GameplayManager : Singleton<GameplayManager>
 
             string outcome = (localPlayerTag != null && ((winner == "Player 1" && localPlayerTag == "Player1") ||
                             (winner == "Player 2" && localPlayerTag == "Player2"))) ? "won" : "lost";
-            winLoadImage.sprite = (outcome == "won") ? youWinSprite : youLoseSprite;          
+            if (outcome == "won")
+            {
+                winMessageText.text = "You won";
+
+            }
+            else
+            {
+                winMessageText.text = "Opponent wins";
+            }
+
         }
+
 
         // Calculate outcome for PostMatchResult
         BoxerController localPlayerForPost = FindObjectsOfType<BoxerController>().FirstOrDefault(p => p.Object.HasInputAuthority);
@@ -602,7 +614,7 @@ public class GameplayManager : Singleton<GameplayManager>
         // Use existing scores
         int score1 = player1Score;
         int score2 = player2Score;
-         
+
         if (isOnePlayerMode)
         {
             // For single-player (not the focus here, but included for completeness)
@@ -619,14 +631,22 @@ public class GameplayManager : Singleton<GameplayManager>
             else if (localPlayerTagForPost == "Player2")
             {
                 score2 = player2Score;
-           }
-           else
+            }
+            else
             {
                 Debug.LogError("[GameplayManager] Could not determine local player tag for score!");
                 score1 = 0; // Fallback in case of an error
                 score2 = 0; // Fallback in case of an error
             }
-        }        
+        }
+        if (localPlayerTagForPost == "Player1")
+        {
+            winScoreText.text = " Your score:" + score1 + "\n" + "Opponent Score:" + score2;
+        }
+        else if (localPlayerTagForPost == "Player2")
+        {
+            winScoreText.text = " Your score:" + score2 + "\n" + "Opponent Score:" + score1;
+        }
 
         // Multiplayer: don�t restart, quit after 5 seconds
         Debug.Log($"[GameplayManager] {outcomeForPost} Game ended in multiplayer, showing win screen.");
@@ -656,18 +676,24 @@ public class GameplayManager : Singleton<GameplayManager>
             winLoadImage.gameObject.SetActive(true);
 
             // Use LocalPlayerId to determine outcome
-            string outcome = (LocalPlayerId != null && ((winner  == "Player1") ||
-                                (winner == "Player2" ))) ? "won" : "lost";
-            winLoadImage.sprite = (outcome == "won") ? youWinSprite : youLoseSprite;
+            string outcome = (LocalPlayerId != null && ((winner == "Player1") ||
+                                (winner == "Player2"))) ? "won" : "lost";
 
+
+        }
+        if (winMessageText != null)
+        {
+            winMessageText.gameObject.SetActive(true);
+            string message = (LocalPlayerId == winner) ? "You won" : "Opponent wins";
+            winMessageText.text = message;
         }
 
         // Calculate outcome for PostMatchResult using LocalPlayerId
         string outcomeForPost;
         if (LocalPlayerId != null)
         {
-            outcomeForPost = (winner ==  "Player1" || winner == "Player 1") ||
-                         (winner ==  "Player2" || winner == "Player 2") ? "won" : "lost";
+            outcomeForPost = (winner == "Player1" || winner == "Player 1") ||
+                         (winner == "Player2" || winner == "Player 2") ? "won" : "lost";
         }
         else
         {
@@ -725,7 +751,15 @@ public class GameplayManager : Singleton<GameplayManager>
         }
         // Use existing scores
         int score1 = player1Score;
-        int score2 = player2Score;             
+        int score2 = player2Score;
+        if (LocalPlayerId == "Player1")
+        {
+            winScoreText.text = " Your score:" + score1 + "\n" + "Opponent Score:" + score2;
+        }
+        else if (LocalPlayerId == "Player2")
+        {
+            winScoreText.text = " Your score:" + score2 + "\n" + "Opponent Score:" + score1;
+        }
 
         // Multiplayer: don�t restart, quit after 5 seconds
         Debug.Log($"[GameplayManager] {outcomeForPost} Game ended in multiplayer, showing win screen.");
@@ -755,25 +789,38 @@ public class GameplayManager : Singleton<GameplayManager>
         }
         else
         {
-            if (player1Multi != null && player1Multi.Object != null  )
+            if (player1Multi != null && player1Multi.Object != null)
                 player1Multi.SetInputEnabled(false);
-            if (player2Multi != null && player2Multi.Object != null )
+            if (player2Multi != null && player2Multi.Object != null)
                 player2Multi.SetInputEnabled(false);
         }
 
         if (winLoadImage != null)
         {
-            scoreboardPanel.SetActive(false);
-            scoreText.gameObject.SetActive(false);
+            // scoreboardPanel.SetActive(false);
+            // scoreText.gameObject.SetActive(false);
             winLoadImage.gameObject.SetActive(true);
-            winLoadImage.sprite = winner == "Player 1" ? youWinSprite : youLoseSprite;
+            winMessageText.gameObject.SetActive(true);
+
         }
+
 
         string outcome = isOnePlayerMode ? (winner == "Player 1" ? "won" : "lost") :
             (winner == "Player 1" && Bridge.PlayerId == player1Multi?.PlayerTag) ||
             (winner == "Player 2" && Bridge.PlayerId == player2Multi?.PlayerTag) ? "won" : "lost";
         int score1 = winner == "Player 1" ? player1Score : player2Score;
         int score2 = winner == "Player 1" ? player2Score : player1Score;
+
+        if (outcome == "won")
+        {
+            winMessageText.text = "You won";
+
+        }
+        else
+        {
+            winMessageText.text = "Opponent wins";
+        }
+        winScoreText.text = " Your score:" + score1 + "\n" + "Opponent Score:" + score2;
         // Bridge.Instance.PostMatchResult(outcome, score);
         StartCoroutine(PostMatchResultWithDelay(outcome, score1, score2));
     }

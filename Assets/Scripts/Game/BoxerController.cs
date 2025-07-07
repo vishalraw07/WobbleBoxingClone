@@ -104,7 +104,7 @@ public class BoxerController : NetworkBehaviour
             NetworkedPosition = transform.position;
             NetworkedLocalScale = transform.localScale;
             isFacingRight = NetworkedLocalScale.x > 0;
-            inputKey = PlayerTag == "Player1" ? "space" : "return";
+            inputKey = PlayerTag == "Player1" ? "space" : "space";
             bodyRigidbody.constraints = RigidbodyConstraints2D.None;
             bodyRigidbody.linearVelocity = new Vector2(0, bodyRigidbody.linearVelocity.y);
             PlayerNumber = PlayerTag == "Player1" ? 1 : 2;
@@ -115,7 +115,7 @@ public class BoxerController : NetworkBehaviour
             transform.position = NetworkedPosition;
             transform.localScale = NetworkedLocalScale;
             isFacingRight = NetworkedLocalScale.x > 0;
-            inputKey = PlayerTag == "Player1" ? "space" : "return";
+            inputKey = PlayerTag == "Player1" ? "space" : "space";
         }
 
         ApplyAppearance();
@@ -428,7 +428,7 @@ public class BoxerController : NetworkBehaviour
         transform.position = position;
         transform.localScale = scale;
         isFacingRight = scale.x > 0;
-        inputKey = PlayerTag == "Player1" ? "space" : "return";
+        inputKey = PlayerTag == "Player1" ? "space" : "space";
         Debug.Log($"[BoxerController] {PlayerTag} synced at {position}, scale: {scale}");
     }
     
@@ -439,7 +439,7 @@ public class BoxerController : NetworkBehaviour
         transform.position = position;
         transform.localScale = scale;
         isFacingRight = scale.x > 0;
-        inputKey = PlayerTag == "Player1" ? "space" : "return";
+        inputKey = PlayerTag == "Player1" ? "space" : "space";
         Debug.Log($"[BoxerController] {PlayerTag} synced at {position}, scale: {scale}");
     }
 
