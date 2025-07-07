@@ -595,8 +595,8 @@ public class GameplayManager : Singleton<GameplayManager>
             winLoadImage.gameObject.SetActive(true);
 
             // Use LocalPlayerId to determine outcome
-            string outcome = (LocalPlayerId != null && ((winner  == "Player1") ||
-                                (winner == "Player2"))) ? "won" : "lost";
+            string outcome = (LocalPlayerId != null && ((winner  == "Player1" || winner =="Player 1") ||
+                                (winner == "Player2" || winner == "Player 2"))) ? "won" : "lost";
             winLoadImage.sprite = (outcome == "won") ? youWinSprite : youLoseSprite;
 
         }
@@ -605,8 +605,8 @@ public class GameplayManager : Singleton<GameplayManager>
         string outcomeForPost;
         if (LocalPlayerId != null)
         {
-            outcomeForPost = (winner ==  "Player1") ||
-                             (winner ==  "Player2") ? "won" : "lost";
+            outcomeForPost = (winner ==  "Player1" || winner == "Player 1") ||
+                             (winner ==  "Player2" || winner == "Player 2") ? "won" : "lost";
         }
         else
         {
