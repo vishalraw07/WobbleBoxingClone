@@ -15,6 +15,7 @@ public class BoxerController : NetworkBehaviour
     public Sprite[] gloveSprites;
 
     public AudioClip punchHitSFX; // Assign in Inspector
+    public AudioClip KOSound; // Assign in Inspector
     public AudioClip jumpSFX;     // Assign in Inspector
     private AudioSource audioSource; // Reference to AudioSource component
     public ParticleSystem Dust;
@@ -94,7 +95,7 @@ public class BoxerController : NetworkBehaviour
             Debug.LogError($"[BoxerController] {PlayerTag} missing AudioSource!");
             return;
         }
-        if (punchHitSFX == null || jumpSFX == null)
+        if (punchHitSFX == null || jumpSFX == null || KOSound == null)
         {
             Debug.LogError($"[BoxerController] {PlayerTag} missing audio clips!");
         }
@@ -321,6 +322,7 @@ public class BoxerController : NetworkBehaviour
         if (audioSource != null && punchHitSFX != null)
         {
             audioSource.PlayOneShot(punchHitSFX);
+            audioSource.PlayOneShot(KOSound);
             Debug.Log($"[BoxerController] {PlayerTag} played punch hit SFX");
         }
         

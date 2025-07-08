@@ -360,6 +360,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5f37067e66edbc24a8ab1e70f5808f0f, type: 3}
   - {fileID: 21300000, guid: 08135d6c8e4e0144faa99c5d9073325e, type: 3}
   punchHitSFX: {fileID: 8300000, guid: 7c1f55bb3eafd5b478573294fafb3fe4, type: 3}
+  KOSound: {fileID: 8300000, guid: 43b69ebead7d85d499ec6f7ba3cee8e3, type: 3}
   jumpSFX: {fileID: 8300000, guid: e91111af047f3c642a8fd6f346fa52cd, type: 3}
   Dust: {fileID: 2546213391133053252}
   shadow: {fileID: 0}
