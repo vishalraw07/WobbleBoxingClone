@@ -19,7 +19,7 @@ public class GloveCollisionSP : MonoBehaviour
     }
 
 
-    void OnTriggerStay2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
         if (Time.time - lastHitTime < hitCooldown || !boxerController.isInputEnabled)
         {
@@ -50,6 +50,7 @@ public class GloveCollisionSP : MonoBehaviour
             {
                 lastHitTime = Time.time;
                 gameManager.SinglePlayerRegisterHit(boxerController.playerTag != "Player1");
+                targetController.OnHit(collision.transform.position + Vector3.up * 0.5f);
 
             }
             targetController.EnableHitIndicator();
