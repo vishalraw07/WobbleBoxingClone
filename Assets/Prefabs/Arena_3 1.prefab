@@ -12,9 +12,7 @@ GameObject:
   - component: {fileID: 3196399180189338768}
   - component: {fileID: 5659985619605318994}
   - component: {fileID: 1649811942439114067}
-  - component: {fileID: 6350573328779600400}
-  - component: {fileID: 1235276175348285560}
-  m_Layer: 8
+  m_Layer: 3
   m_Name: box (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,48 +162,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.32, y: 0.32}
   m_EdgeRadius: 0
---- !u!114 &6350573328779600400
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2280487907122881641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 1571564362
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 1235276175348285560}
-  ForceRemoteRenderTimeframe: 0
---- !u!114 &1235276175348285560
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2280487907122881641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stateAuthorityChangeErrorCorrectionDelta: 0
-  SyncScale: 0
-  SyncParent: 1
-  _interpolationTarget: {fileID: 0}
-  UsePreciseRotation: 0
-  UseRenderSleepThresholds: 1
-  RenderThresholds:
-    UseEnergy: 1
-    Position: 0.01
-    Rotation: 0.01
-    Scale: 0.01
 --- !u!1 &2438446600424510168
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,9 +174,7 @@ GameObject:
   - component: {fileID: 8345169731347966484}
   - component: {fileID: 2458850504088790610}
   - component: {fileID: 5272761746027971624}
-  - component: {fileID: 907711852989801788}
-  - component: {fileID: 5335331601551680672}
-  m_Layer: 8
+  m_Layer: 3
   m_Name: box (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -370,48 +324,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &907711852989801788
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2438446600424510168}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 396454528
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 5335331601551680672}
-  ForceRemoteRenderTimeframe: 0
---- !u!114 &5335331601551680672
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2438446600424510168}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stateAuthorityChangeErrorCorrectionDelta: 0
-  SyncScale: 0
-  SyncParent: 1
-  _interpolationTarget: {fileID: 0}
-  UsePreciseRotation: 0
-  UseRenderSleepThresholds: 1
-  RenderThresholds:
-    UseEnergy: 1
-    Position: 0.01
-    Rotation: 0.01
-    Scale: 0.01
 --- !u!1 &2976956190231494318
 GameObject:
   m_ObjectHideFlags: 0
@@ -558,9 +470,7 @@ GameObject:
   - component: {fileID: 3971855891675735600}
   - component: {fileID: 4642807875066634916}
   - component: {fileID: 8079994280227393943}
-  - component: {fileID: 6903897757223533380}
-  - component: {fileID: 8638039276222623440}
-  m_Layer: 8
+  m_Layer: 3
   m_Name: box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -710,48 +620,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.32, y: 0.32}
   m_EdgeRadius: 0
---- !u!114 &6903897757223533380
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4535241288164393401}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 1560408244
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 8638039276222623440}
-  ForceRemoteRenderTimeframe: 0
---- !u!114 &8638039276222623440
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4535241288164393401}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stateAuthorityChangeErrorCorrectionDelta: 0
-  SyncScale: 0
-  SyncParent: 1
-  _interpolationTarget: {fileID: 0}
-  UsePreciseRotation: 0
-  UseRenderSleepThresholds: 1
-  RenderThresholds:
-    UseEnergy: 1
-    Position: 0.01
-    Rotation: 0.01
-    Scale: 0.01
 --- !u!1 &5015864250164750053
 GameObject:
   m_ObjectHideFlags: 0
@@ -914,7 +782,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.1462686, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1771796428403122745}
@@ -972,14 +840,14 @@ SpriteRenderer:
   m_SortingLayerID: -1034114119
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 8223760342256937110, guid: c3d6c2e836c5ad94eb57022510701f4f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4551604626c7fad4fa7d4a0623934e02, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 2
-  m_Size: {x: 22, y: 10.8}
+  m_DrawMode: 0
+  m_Size: {x: 19.2, y: 10.8}
   m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 1
+  m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
@@ -998,10 +866,7 @@ MonoBehaviour:
   SortKey: 1753319834
   ObjectInterest: 1
   Flags: 262145
-  NestedObjects:
-  - {fileID: 6903897757223533380}
-  - {fileID: 907711852989801788}
-  - {fileID: 6350573328779600400}
+  NestedObjects: []
   NetworkedBehaviours: []
   ForceRemoteRenderTimeframe: 0
 --- !u!1 &6624571710382126779
