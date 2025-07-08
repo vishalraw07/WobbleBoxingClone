@@ -7,12 +7,14 @@ using System.Runtime.InteropServices;
 
 public class Bridge : Singleton<Bridge>
 {
+     
     public static string MatchId { get; private set; }
     public static string PlayerId { get; private set; }
     public static string OpponentId { get; private set; }
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")] private static extern void SendMatchResult(string MatchId ,string PlayerId ,string OpponentId, string outcome, int score1, int score2);
-    [DllImport("__Internal")] private static extern void SendMatchAbort(string message, string error, string errorCode);       
+    [DllImport("__Internal")] private static extern void SendMatchAbort(string message, string error, string errorCode);
+    
 #endif
 
 
@@ -26,7 +28,7 @@ public class Bridge : Singleton<Bridge>
             Debug.LogWarning("[Bridge] Running in Editor, generating random parameters.");
             MatchId = "Room01";
             PlayerId = $"player_{UnityEngine.Random.Range(1000, 9999)}";
-            OpponentId = $"player_{UnityEngine.Random.Range(1000, 9999)}";
+            OpponentId = $"player_{UnityEngine.Random.Range(1000, 9999)}";// $"player_{UnityEngine.Random.Range(1000, 9999)}";
             // Ensure unique OpponentId
             while (OpponentId == PlayerId)
             {

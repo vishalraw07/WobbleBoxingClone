@@ -4,6 +4,8 @@ using Fusion;
 public class GloveCollisionHandler : MonoBehaviour
 {
     private BoxerController boxerController;
+    private BoxerController player1Multi;  // For multiplayer
+    private BoxerController player2Multi;
     private float lastHitTime;
     private const float hitCooldown = 0.5f;
 
@@ -47,8 +49,9 @@ public class GloveCollisionHandler : MonoBehaviour
                 gameManager.RPC_RegisterHit(boxerController.PlayerTag != "Player1");
                 if (boxerController.HasStateAuthority)
                 {
-                    boxerController.RPC_OnHit(collision.transform.position + Vector3.up * 0.5f);
+                    boxerController.RPC_OnHit(collision.transform.position + Vector3.up * 0.5f);                    
                 }
+                targetController.SetInputEnabled(false);
                 // Enable the hit indicator on the opponent's prefab
                 targetController.RPC_EnableHitIndicator();
             }

@@ -7,7 +7,7 @@ mergeInto(LibraryManager.library, {
     parent.postMessage({
       type: 'match_result',
       payload: {
-        matchId: matchId,
+        matchId: matchId ,
         playerId: playerId,
         opponentId: opponentId,
         outcome: outcome,
@@ -30,5 +30,6 @@ mergeInto(LibraryManager.library, {
         errorCode: errorCode
       }
     }, '*');
-  }  
+  }
+
 });
