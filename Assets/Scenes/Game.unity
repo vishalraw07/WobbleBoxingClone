@@ -1211,7 +1211,7 @@ PrefabInstance:
     - target: {fileID: 1609893231044930755, guid: 8cb5e6bc61501824abb5976becdf7414, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -1386565633049842265, guid: 43f89034d10f2c0458dcb9528825c0b1, type: 3}
+      objectReference: {fileID: 21300000, guid: 3f973cf878cbe614f805aa59f71b8ac1, type: 3}
     - target: {fileID: 2751772213163679775, guid: 8cb5e6bc61501824abb5976becdf7414, type: 3}
       propertyPath: m_text
       value: You
