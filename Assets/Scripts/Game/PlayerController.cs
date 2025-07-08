@@ -107,16 +107,18 @@ public class PlayerController : MonoBehaviour
         {
             if (Bridge.OpponentId != null && Bridge.OpponentId.StartsWith("a9"))
             {
-                // Easy AI
+                // Easy AI                
+                horizontalJumpForce = 4f;
                 aiPunchForce = punchForce * 0.7f;
                 aiJumpForce = jumpForce * 0.7f;
-                minAIActionDelay = 1.0f;
-                maxAIActionDelay = 2.0f;
+                minAIActionDelay = 0.7f;
+                maxAIActionDelay = 1.2f;
                 Debug.Log($"[PlayerController] {playerTag} initialized as Easy AI (a9)");
             }
             else if (Bridge.OpponentId != null && Bridge.OpponentId.StartsWith("b9"))
             {
                 // Hard AI
+                horizontalJumpForce = 5f;
                 aiPunchForce = punchForce * 1.2f;
                 aiJumpForce = jumpForce * 1.2f;
                 minAIActionDelay = 0.3f;
@@ -132,6 +134,8 @@ public class PlayerController : MonoBehaviour
                 maxAIActionDelay = 1.5f;
                 Debug.LogWarning($"[PlayerController] {playerTag} initialized with default AI parameters (OpponentId: {Bridge.OpponentId})");
             }
+             
+                nextAIActionTime = Time.time + Random.Range(minAIActionDelay, maxAIActionDelay);
         }
         else
         {
@@ -146,8 +150,7 @@ public class PlayerController : MonoBehaviour
         bodyRigidbody.linearVelocity = new Vector2(0, bodyRigidbody.linearVelocity.y);
         lastHitTime = Time.time - HIT_COOLDOWN;
         spawnTime = Time.time;
-        if (isAIControlled)
-            nextAIActionTime = Time.time + Random.Range(minAIActionDelay, maxAIActionDelay);
+        
 
         Debug.Log($"[PlayerController] {playerTag} initialized, isAIControlled: {isAIControlled}, inputKey: {inputKey}, tag: {gameObject.tag}");
 
@@ -209,7 +212,8 @@ public class PlayerController : MonoBehaviour
                 float distanceToOpponent = CalculateDistanceToOpponent();
                 float delay = distanceToOpponent < 2f ? Random.Range(0.3f, 0.8f) : Random.Range(0.5f, 1.5f);
                 StartCoroutine(PunchAndJump(Random.Range(0.8f, 1.2f), isPlayer1 ? Vector2.right : Vector2.left));
-                nextAIActionTime = Time.time + Random.Range(1f, 3f);
+               // nextAIActionTime = Time.time + Random.Range(1f, 3f);
+                nextAIActionTime = Time.time + Random.Range(minAIActionDelay, maxAIActionDelay);
             }
         }
     }
@@ -287,6 +291,18 @@ public class PlayerController : MonoBehaviour
         currentAnimationState = "Idle";
         isPunching = false;
     }
+
+    public void OnHit(Vector3 hitPosition)
+    {
+
+        if (audioSource != null && punchHitSFX != null)
+        {
+            audioSource.PlayOneShot(punchHitSFX);
+            Debug.Log($"[PlayerController] {playerTag} played punch hit SFX");
+        }
+
+    }
+
     public void EnableHitIndicator()
     {
         if (hitIndicator != null)

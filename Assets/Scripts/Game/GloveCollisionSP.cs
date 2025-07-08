@@ -50,6 +50,7 @@ public class GloveCollisionSP : MonoBehaviour
             {
                 lastHitTime = Time.time;
                 gameManager.SinglePlayerRegisterHit(boxerController.playerTag != "Player1");
+                targetController.OnHit(collision.transform.position + Vector3.up * 0.5f);
 
             }
             targetController.EnableHitIndicator();

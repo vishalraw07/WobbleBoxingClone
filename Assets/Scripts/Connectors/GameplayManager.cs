@@ -420,6 +420,9 @@ public class GameplayManager : Singleton<GameplayManager>
 
         if (IsGameEnded || IsTransitioning) return;
 
+        if (player1Multi != null) player1Multi.SetInputEnabled(false);
+        if (player2Multi != null) player2Multi.SetInputEnabled(false);
+
         IsTransitioning = true; // Lock transitions immediately
 
         Debug.Log($"[GameplayManager] RegisterHit: {(isPlayer2 ? "Player 2" : "Player 1")} scored a K.O.");
@@ -808,8 +811,9 @@ public class GameplayManager : Singleton<GameplayManager>
         string outcome = isOnePlayerMode ? (winner == "Player 1" ? "won" : "lost") :
             (winner == "Player 1" && Bridge.PlayerId == player1Multi?.PlayerTag) ||
             (winner == "Player 2" && Bridge.PlayerId == player2Multi?.PlayerTag) ? "won" : "lost";
-        int score1 = winner == "Player 1" ? player1Score : player2Score;
-        int score2 = winner == "Player 1" ? player2Score : player1Score;
+        //int score1 = winner == "Player 1" ? player1Score : player2Score;
+        //int score2 = winner == "Player 2" ? player2Score : player1Score;
+        int score1= player1Score,score2 = player2Score;
 
         if (outcome == "won")
         {
