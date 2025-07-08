@@ -418,10 +418,7 @@ public class GameplayManager : Singleton<GameplayManager>
     {
         Debug.Log($"[GameplayManager] entering transistion state {IsGameEnded}, {IsTransitioning}");
 
-        if (IsGameEnded || IsTransitioning) return;
-
-        if (player1Multi != null) player1Multi.SetInputEnabled(false);
-        if (player2Multi != null) player2Multi.SetInputEnabled(false);
+        if (IsGameEnded || IsTransitioning) return;         
 
         IsTransitioning = true; // Lock transitions immediately
 
