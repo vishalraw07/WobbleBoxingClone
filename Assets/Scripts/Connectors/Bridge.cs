@@ -14,7 +14,7 @@ public class Bridge : Singleton<Bridge>
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")] private static extern void SendMatchResult(string MatchId ,string PlayerId ,string OpponentId, string outcome, int score1, int score2);
     [DllImport("__Internal")] private static extern void SendMatchAbort(string message, string error, string errorCode);
-    [DllImport("__Internal")] private static extern int GetDeviceType();   
+    
 #endif
 
 

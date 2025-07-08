@@ -912,7 +912,7 @@ MonoBehaviour:
   player2Score: 0
   player1Text: {fileID: 1817103536}
   player2Text: {fileID: 1817103535}
-  scoreToWin: 2
+  scoreToWin: 5
   scoreText: {fileID: 1817103534}
   winLoadImage: {fileID: 980972767}
   waitingImage: {fileID: 1508759878}
@@ -1052,9 +1052,9 @@ MonoBehaviour:
   - {fileID: 289951404390865045, guid: 54918bb37a9e4f042948336b0d803b36, type: 3}
   - {fileID: 3913145200221327199, guid: 1aaab0010a4b22941891666398b04a5c, type: 3}
   - {fileID: 5464599636234594232, guid: 311ba1f3ad65cf749b0486a4e23a3c6b, type: 3}
-  - {fileID: 289951404390865045, guid: 9cf6d01b51896054784b4d108fcc15fd, type: 3}
-  - {fileID: 3913145200221327199, guid: a7fd6bb3f4a89944aa719f00b85c78a7, type: 3}
-  - {fileID: 5464599636234594232, guid: 282410bcc25b02447a0f629b6158bc8b, type: 3}
+  - {fileID: 289951404390865045, guid: 54918bb37a9e4f042948336b0d803b36, type: 3}
+  - {fileID: 3913145200221327199, guid: 1aaab0010a4b22941891666398b04a5c, type: 3}
+  - {fileID: 5464599636234594232, guid: 311ba1f3ad65cf749b0486a4e23a3c6b, type: 3}
 --- !u!1001 &1817103531
 PrefabInstance:
   m_ObjectHideFlags: 0

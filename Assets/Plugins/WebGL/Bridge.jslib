@@ -1,5 +1,5 @@
 mergeInto(LibraryManager.library, {
-  SendMatchResult: function((matchIdPtr, playerIdPtr, opponentIdPtr ,outcomePtr, score, Opponentscore) {
+  SendMatchResult: function(matchIdPtr, playerIdPtr, opponentIdPtr ,outcomePtr, score, Opponentscore) {
      var outcome = UTF8ToString(outcomePtr);
     var matchId = UTF8ToString(matchIdPtr);
     var playerId = UTF8ToString(playerIdPtr);
@@ -7,9 +7,9 @@ mergeInto(LibraryManager.library, {
     parent.postMessage({
       type: 'match_result',
       payload: {
-        matchId: window.matchId || '',
-        playerId: window.playerId || '',
-        opponentId: window.opponentId || '',
+        matchId: matchId ,
+        playerId: playerId,
+        opponentId: opponentId,
         outcome: outcome,
         score: score,
         Opponentscore: Opponentscore
@@ -30,15 +30,6 @@ mergeInto(LibraryManager.library, {
         errorCode: errorCode
       }
     }, '*');
-  },
-
-  SendScreenshot: function(base64Ptr) {
-    var base64 = UTF8ToString(base64Ptr);
-    parent.postMessage({
-      type: 'game_state',
-      payload: {
-        state: base64
-      }
-    }, '*');
   }
+
 });

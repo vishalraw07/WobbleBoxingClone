@@ -13,7 +13,7 @@ public class GameplayManager : Singleton<GameplayManager>
     public int player2Score = 0;
     public TextMeshProUGUI player1Text; // Label for Player1 (left side)
     public TextMeshProUGUI player2Text; // Label for Player2 (right side)
-    public int scoreToWin = 2;
+    public int scoreToWin = 3;
     public TextMeshProUGUI scoreText;
     public Image winLoadImage;
     public Image waitingImage;

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 830091369112436034}
   - component: {fileID: 8691371543613952961}
   - component: {fileID: 5329094665900542532}
+  - component: {fileID: 6634031786431289128}
   m_Layer: 3
   m_Name: box (1)
   m_TagString: Untagged
@@ -162,6 +163,24 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.32, y: 0.32}
   m_EdgeRadius: 0
+--- !u!114 &6634031786431289128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141434611158264499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1204521286
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &289951404390865045
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,7 +293,10 @@ MonoBehaviour:
   SortKey: 995387632
   ObjectInterest: 1
   Flags: 262145
-  NestedObjects: []
+  NestedObjects:
+  - {fileID: 6691758529092355520}
+  - {fileID: 6634031786431289128}
+  - {fileID: 7618516167724168037}
   NetworkedBehaviours: []
   ForceRemoteRenderTimeframe: 0
 --- !u!1 &2611448714318223720
@@ -289,6 +311,7 @@ GameObject:
   - component: {fileID: 3856661264338689789}
   - component: {fileID: 981025797812267336}
   - component: {fileID: 2264433369376486574}
+  - component: {fileID: 7618516167724168037}
   m_Layer: 3
   m_Name: box (2)
   m_TagString: Untagged
@@ -439,6 +462,24 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.32, y: 0.32}
   m_EdgeRadius: 0
+--- !u!114 &7618516167724168037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611448714318223720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2758183412
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &3303271263509354428
 GameObject:
   m_ObjectHideFlags: 0
@@ -585,6 +626,7 @@ GameObject:
   - component: {fileID: 4069181736739371182}
   - component: {fileID: 4812133931462405993}
   - component: {fileID: 4775038318931418451}
+  - component: {fileID: 6691758529092355520}
   m_Layer: 3
   m_Name: box
   m_TagString: Untagged
@@ -735,6 +777,24 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.32, y: 0.32}
   m_EdgeRadius: 0
+--- !u!114 &6691758529092355520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3352524980713562020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 647931655
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &4770173032130556088
 GameObject:
   m_ObjectHideFlags: 0
