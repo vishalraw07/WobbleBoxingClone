@@ -142,8 +142,14 @@ public class BoxerController : NetworkBehaviour
             if (Input.GetKeyDown(inputKey))
             {
                 punchInputTriggered = true;
-                Debug.Log($"[BoxerController] {PlayerTag} detected input: {inputKey}");
+                Debug.Log($"[BoxerController] {PlayerTag} detected input: {(Input.GetKeyDown(inputKey) ? "key " + inputKey : "touch")}");
             }
+            if (Bridge.Instance.IsMobile() && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+            {
+                punchInputTriggered = true;
+                Debug.Log($"[BoxerController] {PlayerTag} detected input: {(Input.GetKeyDown(inputKey) ? "key " + inputKey : "touch")}");
+            }
+            
         }
         if (HasInputAuthority)
         {
@@ -209,7 +215,7 @@ public class BoxerController : NetworkBehaviour
     {
         Vector3 origin = bodyRigidbody.position + Vector2.up * groundCheckOffset;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector3.down, groundCheckDistance, groundLayerMask);
-        Debug.Log($"Ground Check: {hit.collider}");
+        // Debug.Log($"Ground Check: {hit.collider}");
         IsGrounded = hit.collider != null;
         
     }

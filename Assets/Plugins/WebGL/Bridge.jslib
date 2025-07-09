@@ -1,4 +1,10 @@
 mergeInto(LibraryManager.library, {
+  
+  GetDeviceType: function() {
+    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    return isMobile ? 1 : 0;
+  },  
+
   SendMatchResult: function(matchIdPtr, playerIdPtr, opponentIdPtr ,outcomePtr, score, Opponentscore) {
      var outcome = UTF8ToString(outcomePtr);
     var matchId = UTF8ToString(matchIdPtr);

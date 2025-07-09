@@ -19,13 +19,15 @@ public class GloveCollisionHandler : MonoBehaviour
         }
     }
 
-    void OnTriggerStay2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
         if (Time.time - lastHitTime < hitCooldown || !boxerController.IsInputEnabled)
         {
             Debug.Log($"[GloveCollisionHandler] {boxerController.PlayerTag} skipping collision: Cooldown active or input disabled");
             return;
         }
+        
+        
 
         Debug.Log($"[GloveCollisionHandler] {boxerController.PlayerTag} OnTriggerEnter2D: This GameObject={gameObject.name}, Tag={gameObject.tag}, Layer={LayerMask.LayerToName(gameObject.layer)}, Collided with={collision.gameObject.name}, Collided Tag={collision.gameObject.tag}, Collided Layer={LayerMask.LayerToName(collision.gameObject.layer)}");
 
@@ -49,7 +51,7 @@ public class GloveCollisionHandler : MonoBehaviour
                 gameManager.RPC_RegisterHit(boxerController.PlayerTag != "Player1");
                 if (boxerController.HasStateAuthority)
                 {
-                    boxerController.RPC_OnHit(collision.transform.position + Vector3.up * 0.5f);                    
+                    boxerController.RPC_OnHit(collision.transform.position + Vector3.up * 0.5f);
                 }
                 targetController.SetInputEnabled(false);
                 // Enable the hit indicator on the opponent's prefab

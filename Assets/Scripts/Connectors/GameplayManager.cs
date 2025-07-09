@@ -549,7 +549,7 @@ public class GameplayManager : Singleton<GameplayManager>
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_UpdateScoreUI()
+    public void RPC_UpdateScoreUI()
     {
         if (scoreText != null)
         {

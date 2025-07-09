@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 public class Bridge : Singleton<Bridge>
 {
-     
+
     public static string MatchId { get; private set; }
     public static string PlayerId { get; private set; }
     public static string OpponentId { get; private set; }
@@ -64,19 +64,19 @@ public class Bridge : Singleton<Bridge>
         {
             PostMatchAbort("Invalid match parameters", "Missing URL parameters", "1004");
             return;
-        }         
+        }
 
         // Check for bot or multiplayer
         if (PlayerUtils.IsBot(OpponentId))
         {
-            Debug.Log("[Bridge] Bot detected, starting single-player mode.");            
-            SceneManager.LoadScene("Game");        
+            Debug.Log("[Bridge] Bot detected, starting single-player mode.");
+            SceneManager.LoadScene("Game");
         }
         else
         {
             Debug.Log("[Bridge] Starting multiplayer session.");
             Connector.Instance.ConnectToServer(MatchId);
-        }                
+        }
     }
 
     public void PostMatchResult(string outcome, int score1 = 0, int score2 = 0)
@@ -100,7 +100,15 @@ public class Bridge : Singleton<Bridge>
         Debug.Log($"[Editor] match_abort: {{ message: {message}, error: {error}, errorCode: {errorCode} }}");
 #endif
     }
- 
+
+    internal bool IsMobile()
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        return GetDeviceType() == 1;
+#else
+        return false;
+#endif
+    }
 
     public static class PlayerUtils
     {
